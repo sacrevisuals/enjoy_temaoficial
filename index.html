@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerador de Tema - Enjoy Dreams</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 30px;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        width: 100%;
+      }
+
+      .upload-area {
+        border: 3px dashed #667eea;
+        border-radius: 15px;
+        padding: 40px;
+        text-align: center;
+        margin-bottom: 30px;
+        background: #f8f9ff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .upload-area:hover {
+        border-color: #764ba2;
+        background: #f0f2ff;
+      }
+
+      .upload-area.dragover {
+        border-color: #764ba2;
+        background: #e8ebff;
+        transform: scale(1.02);
+      }
+
+      #fileInput {
+        display: none;
+      }
+
+      .upload-icon {
+        font-size: 3rem;
+        color: #667eea;
+        margin-bottom: 15px;
+      }
+
+      .canvas-container {
+        text-align: center;
+        margin: 30px 0;
+      }
+
+      #canvas {
+        border: 2px solid #ddd;
+        border-radius: 15px;
+        max-width: 100%;
+        height: auto;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .controls {
+        display: none;
+        background: #f8f9ff;
+        padding: 20px;
+        border-radius: 15px;
+        margin: 20px 0;
+      }
+
+      .control-group {
+        margin-bottom: 15px;
+      }
+
+      .control-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .control-group input[type="range"] {
+        width: 100%;
+        height: 8px;
+        border-radius: 5px;
+        background: #ddd;
+        outline: none;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+
+      .control-group input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #667eea;
+        cursor: pointer;
+      }
+
+      .buttons {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn-secondary {
+        background: #f8f9ff;
+        color: #667eea;
+        border: 2px solid #667eea;
+      }
+
+      .btn-secondary:hover {
+        background: #667eea;
+        color: white;
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .instructions {
+        background: #e8f4f8;
+        padding: 20px;
+        border-radius: 15px;
+        margin: 20px 0;
+        border-left: 5px solid #667eea;
+      }
+
+      .instructions h3 {
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      .instructions ul {
+        color: #666;
+        padding-left: 20px;
+      }
+
+      .instructions li {
+        margin: 5px 0;
+      }
+
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .container {
+          padding: 20px;
+        }
+
+        .upload-area {
+          padding: 30px 20px;
+        }
+
+        .buttons {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>🌿 ENJOY DREAMS</h1>
+      <p>O Despertar da Natureza - Crie sua foto personalizada</p>
+    </div>
+
+    <div class="container">
+      <div
+        class="upload-area"
+        onclick="document.getElementById('fileInput').click()"
+      >
+        <div class="upload-icon">📸</div>
+        <h3>Clique aqui para carregar sua foto</h3>
+        <p>Ou arraste e solte sua imagem aqui</p>
+        <p style="margin-top: 10px; color: #666; font-size: 0.9rem">
+          Formatos: JPG, PNG • Tamanho recomendado: quadrada
+        </p>
+      </div>
+
+      <input type="file" id="fileInput" accept="image/*" />
+
+      <div class="canvas-container">
+        <canvas id="canvas" width="1080" height="1080"></canvas>
+      </div>
+
+      <div class="controls" id="controls">
+        <div class="control-group">
+          <label for="scaleSlider">Tamanho da foto:</label>
+          <input
+            type="range"
+            id="scaleSlider"
+            min="0.5"
+            max="3"
+            step="0.1"
+            value="1"
+          />
+        </div>
+        <div class="control-group">
+          <label for="xSlider">Posição horizontal:</label>
+          <input type="range" id="xSlider" min="-200" max="200" value="0" />
+        </div>
+        <div class="control-group">
+          <label for="ySlider">Posição vertical:</label>
+          <input type="range" id="ySlider" min="-200" max="200" value="0" />
+        </div>
+      </div>
+
+      <div class="instructions">
+        <h3>📋 Como usar:</h3>
+        <ul>
+          <li><strong>1.</strong> Carregue sua foto clicando na área acima</li>
+          <li>
+            <strong>2.</strong> Ajuste o tamanho e posição usando os controles
+          </li>
+          <li><strong>3.</strong> Clique em "Baixar Imagem" para salvar</li>
+          <li>
+            <strong>Dica:</strong> Use fotos quadradas para melhor resultado!
+          </li>
+        </ul>
+      </div>
+
+      <div class="buttons">
+        <button class="btn btn-secondary" onclick="resetImage()">
+          🔄 Resetar
+        </button>
+        <button
+          class="btn btn-primary"
+          id="downloadBtn"
+          onclick="downloadImage()"
+          disabled
+        >
+          ⬇️ Baixar Imagem
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      const fileInput = document.getElementById("fileInput");
+      const controls = document.getElementById("controls");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const uploadArea = document.querySelector(".upload-area");
+
+      // Configurações do frame
+      const FRAME_CONFIG = {
+        totalWidth: 1080,
+        totalHeight: 1080,
+        circleX: 78.84,
+        circleY: 104.84,
+        circleWidth: 924.32,
+        circleHeight: 924.32,
+      };
+
+      let frameImage = null;
+      let userImage = null;
+      let imageSettings = {
+        scale: 1,
+        x: 0,
+        y: 0,
+      };
+
+      // Carrega o frame do tema
+      function loadFrameImage() {
+        frameImage = new Image();
+        frameImage.onload = function () {
+          drawCanvas();
+        };
+        frameImage.src = "assets/TEMA OFICIAL.png";
+      }
+
+      // Eventos de drag and drop
+      uploadArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadArea.classList.add("dragover");
+      });
+
+      uploadArea.addEventListener("dragleave", () => {
+        uploadArea.classList.remove("dragover");
+      });
+
+      uploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove("dragover");
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          handleFileUpload(files[0]);
+        }
+      });
+
+      // Upload de arquivo
+      fileInput.addEventListener("change", (e) => {
+        if (e.target.files.length > 0) {
+          handleFileUpload(e.target.files[0]);
+        }
+      });
+
+      function handleFileUpload(file) {
+        if (!file.type.startsWith("image/")) {
+          alert("Por favor, selecione apenas arquivos de imagem.");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          userImage = new Image();
+          userImage.onload = function () {
+            controls.style.display = "block";
+            downloadBtn.disabled = false;
+            resetImageSettings();
+            drawCanvas();
+          };
+          userImage.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      // Controles deslizantes
+      document.getElementById("scaleSlider").addEventListener("input", (e) => {
+        imageSettings.scale = parseFloat(e.target.value);
+        drawCanvas();
+      });
+
+      document.getElementById("xSlider").addEventListener("input", (e) => {
+        imageSettings.x = parseInt(e.target.value);
+        drawCanvas();
+      });
+
+      document.getElementById("ySlider").addEventListener("input", (e) => {
+        imageSettings.y = parseInt(e.target.value);
+        drawCanvas();
+      });
+
+      function resetImageSettings() {
+        imageSettings = { scale: 1, x: 0, y: 0 };
+        document.getElementById("scaleSlider").value = 1;
+        document.getElementById("xSlider").value = 0;
+        document.getElementById("ySlider").value = 0;
+      }
+
+      function resetImage() {
+        userImage = null;
+        controls.style.display = "none";
+        downloadBtn.disabled = true;
+        fileInput.value = "";
+        drawCanvas();
+      }
+
+      function drawCanvas() {
+        // Limpa o canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (userImage) {
+          // Cria máscara circular
+          ctx.save();
+
+          // Define a área circular para clipping
+          const centerX = FRAME_CONFIG.circleX + FRAME_CONFIG.circleWidth / 2;
+          const centerY = FRAME_CONFIG.circleY + FRAME_CONFIG.circleHeight / 2;
+          const radius =
+            Math.min(FRAME_CONFIG.circleWidth, FRAME_CONFIG.circleHeight) / 2;
+
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+          ctx.clip();
+
+          // Desenha a imagem do usuário
+          const imgSize = Math.max(userImage.width, userImage.height);
+          const scaledSize = imgSize * imageSettings.scale;
+          const drawX = centerX - scaledSize / 2 + imageSettings.x;
+          const drawY = centerY - scaledSize / 2 + imageSettings.y;
+
+          ctx.drawImage(userImage, drawX, drawY, scaledSize, scaledSize);
+          ctx.restore();
+        }
+
+        // Desenha o frame por cima
+        if (frameImage) {
+          ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
+        }
+      }
+
+      function downloadImage() {
+        const link = document.createElement("a");
+        link.download = "enjoy-dreams-tema.png";
+        link.href = canvas.toDataURL();
+        link.click();
+      }
+
+      // Inicializa
+      loadFrameImage();
+    </script>
+  </body>
+</html>
